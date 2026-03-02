@@ -1,0 +1,35 @@
+name: Windows Desktop Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Enable Windows Desktop
+        run: flutter config --enable-windows-desktop
+
+      - name: Build Windows Executable
+        run: flutter build windows --release
+
+      - name: Archive Release
+        uses: actions/upload-artifact@v3
+        with:
+          name: GlobalTradeTranslator-Windows
+          path: build\windows\x64\runner\Release\*
