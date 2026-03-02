@@ -9,10 +9,12 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -29,7 +31,19 @@ jobs:
         run: flutter build windows --release
 
       - name: Archive Release
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: GlobalTradeTranslator-Windows
           path: build\windows\x64\runner\Release\*
+
+      - name: Zip Release File
+        run: Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath GlobalTradeTranslator-Windows.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v1.0.${{ github.run_number }}"
+          name: "Global Trade Translator Release v1.0.${{ github.run_number }}"
+          files: GlobalTradeTranslator-Windows.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
