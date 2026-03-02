@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/chat_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'chat_screen.dart';
 
 class StartMenuScreen extends StatefulWidget {
@@ -11,17 +12,17 @@ class StartMenuScreen extends StatefulWidget {
 }
 
 class _StartMenuScreenState extends State<StartMenuScreen> {
-  String _sourceLanguage = 'Türkçe';
-  String _targetLanguage = 'İngilizce';
+  String _sourceLanguageCode = 'tr';
+  String _targetLanguageCode = 'en';
   final TextEditingController _sectorController = TextEditingController();
 
-  final List<String> supportedLanguages = [
-    'Türkçe',
-    'İngilizce',
-    'Rusça',
-    'Çince',
-    'Hintçe',
-    'Arapça',
+  final List<String> supportedLanguageCodes = [
+    'tr',
+    'en',
+    'ru',
+    'zh',
+    'hi',
+    'ar',
   ];
 
   @override
@@ -42,8 +43,8 @@ class _StartMenuScreenState extends State<StartMenuScreen> {
     // Call provider to start a new mapped conversation
     final provider = Provider.of<ChatProvider>(context, listen: false);
     await provider.startNewConversation(
-      sourceLang: _sourceLanguage,
-      targetLang: _targetLanguage,
+      sourceLang: 'language_$_sourceLanguageCode'.tr(),
+      targetLang: 'language_$_targetLanguageCode'.tr(),
       sector: sector,
     );
 
@@ -59,7 +60,7 @@ class _StartMenuScreenState extends State<StartMenuScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Global Trade Translator'),
+        title: Text('app_title'.tr()),
         backgroundColor: Colors.blue[800],
       ),
       body: SingleChildScrollView(
@@ -69,10 +70,10 @@ class _StartMenuScreenState extends State<StartMenuScreen> {
           children: [
             const Icon(Icons.language, size: 80, color: Colors.blue),
             const SizedBox(height: 24),
-            const Text(
-              'Yeni Çeviri Başlat',
+            Text(
+              'new_chat'.tr(),
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 32),
             Card(
@@ -83,35 +84,35 @@ class _StartMenuScreenState extends State<StartMenuScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Ana Diliniz (Giden)', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+                    Text('source_lang'.tr(), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
-                      value: _sourceLanguage,
+                      value: _sourceLanguageCode,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                       ),
-                      items: supportedLanguages.map((lang) {
-                        return DropdownMenuItem(value: lang, child: Text(lang));
+                      items: supportedLanguageCodes.map((code) {
+                        return DropdownMenuItem(value: code, child: Text('language_$code'.tr()));
                       }).toList(),
                       onChanged: (val) {
-                        if (val != null) setState(() => _sourceLanguage = val);
+                        if (val != null) setState(() => _sourceLanguageCode = val);
                       },
                     ),
                     const SizedBox(height: 24),
-                    const Text('Hedef Dil (Gelen)', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+                    Text('target_lang'.tr(), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
-                      value: _targetLanguage,
+                      value: _targetLanguageCode,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                       ),
-                      items: supportedLanguages.map((lang) {
-                        return DropdownMenuItem(value: lang, child: Text(lang));
+                      items: supportedLanguageCodes.map((code) {
+                        return DropdownMenuItem(value: code, child: Text('language_$code'.tr()));
                       }).toList(),
                       onChanged: (val) {
-                        if (val != null) setState(() => _targetLanguage = val);
+                        if (val != null) setState(() => _targetLanguageCode = val);
                       },
                     ),
                   ],
@@ -127,18 +128,18 @@ class _StartMenuScreenState extends State<StartMenuScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Sektör / Konu', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+                    Text('sector_label'.tr(), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
                     const SizedBox(height: 8),
                     TextField(
                       controller: _sectorController,
                       decoration: InputDecoration(
-                        hintText: 'Örn: Tekstil, Spor Malzemeleri...',
+                        hintText: 'sector_hint'.tr(),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text('Yapay zeka size bu alana uygun terimler önerecek.', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    Text('sector_info'.tr(), style: const TextStyle(fontSize: 12, color: Colors.grey)),
                   ],
                 ),
               ),
@@ -151,7 +152,7 @@ class _StartMenuScreenState extends State<StartMenuScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text('Sohbete Başla', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+              child: Text('start_chat'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
             ),
           ],
         ),

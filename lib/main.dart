@@ -3,13 +3,23 @@ import 'package:provider/provider.dart';
 import 'providers/chat_provider.dart';
 import 'screens/home_screen.dart';
 
-void main() {
+import 'package:easy_localization/easy_localization.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
+
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ChatProvider()),
-      ],
-      child: const AITranslateApp(),
+    EasyLocalization(
+      supportedLocales: const [Locale('tr', 'TR'), Locale('en', 'US')],
+      path: 'assets/translations', 
+      fallbackLocale: const Locale('en', 'US'),
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ],
+        child: const AITranslateApp(),
+      ),
     ),
   );
 }
@@ -20,7 +30,10 @@ class AITranslateApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '21 Çeviri 21',
+      title: 'app_title'.tr(),
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,

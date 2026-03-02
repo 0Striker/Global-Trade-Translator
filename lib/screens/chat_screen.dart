@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/chat_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../models/message.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -34,7 +35,7 @@ class _ChatScreenState extends State<ChatScreen> {
           builder: (context, provider, child) {
             final sector = provider.currentSector;
             final isSectorEmpty = sector == null || sector.isEmpty;
-            return Text(isSectorEmpty ? 'Çeviri Ekranı' : 'Çeviri ($sector)');
+            return Text(isSectorEmpty ? 'chat_screen_title'.tr() : 'chat_screen_title_sector'.tr(args: [sector]));
           },
         ),
         backgroundColor: Colors.blue[800],
@@ -47,10 +48,10 @@ class _ChatScreenState extends State<ChatScreen> {
             children: [
               Expanded(
                 child: provider.currentMessages.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Text(
-                          'Aşağıya yazın ve çeviri türünü seçin.',
-                          style: TextStyle(color: Colors.grey, fontSize: 16),
+                          'empty_chat'.tr(),
+                          style: const TextStyle(color: Colors.grey, fontSize: 16),
                         ),
                       )
                     : ListView.builder(
@@ -58,7 +59,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         itemCount: provider.currentMessages.length,
                         itemBuilder: (context, index) {
                           final msg = provider.currentMessages[index];
-                          return _buildMessageBubble(msg);
+                          return _buildMessageBubble(msg, provider);
                         },
                       ),
               ),
@@ -75,7 +76,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _buildMessageBubble(Message msg) {
+  Widget _buildMessageBubble(Message msg, ChatProvider provider) {
     final isUser = msg.role == 'user';
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
@@ -98,8 +99,12 @@ class _ChatScreenState extends State<ChatScreen> {
               children: [
                  Text(
                   isUser 
-                      ? (msg.direction == 'gelen' ? 'Gelen Orijinal Mesaj:' : 'Giden Orijinal Mesaj:')
-                      : (msg.direction == 'gelen' ? 'Çeviri (${provider.currentSourceLanguage ?? 'Türkçe'}):' : 'Çeviri (${provider.currentTargetLanguage ?? 'İngilizce'}):'),
+                      ? (msg.direction == 'gelen' ? 'original_in'.tr() : 'original_out'.tr())
+                      : 'translation_to'.tr(args: [
+                          (msg.direction == 'gelen' 
+                              ? (provider.currentSourceLanguage ?? 'language_tr'.tr()) 
+                              : (provider.currentTargetLanguage ?? 'language_en'.tr()))
+                        ]),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
@@ -152,9 +157,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: msg.content));
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Kopyalandı!'),
-                      duration: Duration(seconds: 2),
+                    SnackBar(
+                      content: Text('copied'.tr()),
+                      duration: const Duration(seconds: 2),
                     ),
                   );
                 },
@@ -195,11 +200,11 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text('Ben Yazıyorum\n($sourceLang)', textAlign: TextAlign.center, style: const TextStyle(fontSize: 12)),
+                    child: Text('i_write'.tr(args: [sourceLang]), textAlign: TextAlign.center, style: const TextStyle(fontSize: 12)),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text('Karşıdan Geldi\n($targetLang -> $sourceLang)', textAlign: TextAlign.center, style: const TextStyle(fontSize: 12)),
+                    child: Text('they_write'.tr(args: [targetLang, sourceLang]), textAlign: TextAlign.center, style: const TextStyle(fontSize: 12)),
                   ),
                 ],
               ),
@@ -212,8 +217,8 @@ class _ChatScreenState extends State<ChatScreen> {
             minLines: 1,
             decoration: InputDecoration(
               hintText: _selectedDirection == 'giden' 
-                  ? '$sourceLang dilinde yazın ($targetLang diline çevrilecek)...' 
-                  : '$targetLang dilinde orijinal mesajı yapıştırın...',
+                  ? 'hint_i_write'.tr(args: [sourceLang, targetLang]) 
+                  : 'hint_they_write'.tr(args: [targetLang]),
               filled: true,
               fillColor: Colors.white,
               border: OutlineInputBorder(
@@ -237,7 +242,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           provider.sendMessage(text, isContextual: true, direction: _selectedDirection);
                         },
                   icon: const Icon(Icons.history, size: 20),
-                  label: const Text('Bağlamlı Çeviri', style: TextStyle(fontSize: 12)),
+                  label: Text('context_translation'.tr(), style: const TextStyle(fontSize: 12)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange[600],
                     foregroundColor: Colors.white,
@@ -256,7 +261,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           provider.sendMessage(text, isContextual: false, direction: _selectedDirection);
                         },
                   icon: const Icon(Icons.flash_on, size: 20),
-                  label: const Text('Direkt Çeviri', style: TextStyle(fontSize: 12)),
+                  label: Text('direct_translation'.tr(), style: const TextStyle(fontSize: 12)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green[600],
                     foregroundColor: Colors.white,

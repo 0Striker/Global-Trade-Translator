@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 import '../providers/chat_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'chat_screen.dart';
 import 'start_menu_screen.dart';
 
@@ -26,8 +26,20 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('21 Çeviri 21'),
+        title: Text('app_title'.tr()),
         backgroundColor: Colors.blue[800],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.language),
+            onPressed: () {
+              if (context.locale.languageCode == 'tr') {
+                context.setLocale(const Locale('en', 'US'));
+              } else {
+                context.setLocale(const Locale('tr', 'TR'));
+              }
+            },
+          ),
+        ],
       ),
       body: Consumer<ChatProvider>(
         builder: (context, provider, child) {
@@ -38,10 +50,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                    const Icon(Icons.forum_outlined, size: 80, color: Colors.grey),
                    const SizedBox(height: 20),
-                  const Text(
-                    'Henüz konuşma yok.\nYeni bir çeviri başlatmak için tıkla.',
+                  Text(
+                    'no_chats'.tr(),
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                    style: const TextStyle(fontSize: 18, color: Colors.grey),
                   ),
                   const SizedBox(height: 40),
                   _buildNewChatButton(context),
@@ -70,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       elevation: 2,
                       child: ListTile(
                         leading: const Icon(Icons.chat_bubble_outline, color: Colors.blue),
-                        title: Text('Konuşma: $formattedDate', style: const TextStyle(fontWeight: FontWeight.bold)),
+                        title: Text('${'chat_card_title'.tr()} $formattedDate', style: const TextStyle(fontWeight: FontWeight.bold)),
                         trailing: IconButton(
                            icon: const Icon(Icons.delete, color: Colors.red),
                            onPressed: () {
@@ -111,9 +123,9 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       },
       icon: const Icon(Icons.add, size: 28),
-      label: const Text(
-        'Yeni Konuşma Başlat',
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      label: Text(
+        'new_chat_button'.tr(),
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
@@ -131,17 +143,17 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Sil Onayı"),
-          content: const Text("Bu konuşmayı silmek istediğinizden emin misiniz?"),
+          title: Text('delete_title'.tr()),
+          content: Text('delete_content'.tr()),
           actions: <Widget>[
             TextButton(
-              child: const Text("İptal"),
+              child: Text('cancel'.tr()),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text("Sil", style: TextStyle(color: Colors.red)),
+              child: Text('delete'.tr(), style: const TextStyle(color: Colors.red)),
               onPressed: () async {
                 Navigator.of(context).pop();
                 await Provider.of<ChatProvider>(context, listen: false).deleteConversation(id);
