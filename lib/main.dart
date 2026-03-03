@@ -4,10 +4,17 @@ import 'providers/chat_provider.dart';
 import 'screens/home_screen.dart';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'dart:io';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+
+  if (Platform.isWindows || Platform.isLinux) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
 
   runApp(
     EasyLocalization(
