@@ -3,8 +3,6 @@ import 'package:http/http.dart' as http;
 import '../models/message.dart';
 
 class GeminiService {
-  // TODO: Replace with actual Google Gemini API Key
-  static const String _apiKey = 'AIzaSyBeYYeJiBKVRWJ74lYm553WGCAB04GtDwA';
   static const String _baseUrl =
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
@@ -35,7 +33,8 @@ SADECE AŞAĞIDAKİ JSON FORMATINDA YANIT VER. BAŞKA HİÇBİR TEXT YAZMA:
       {String? direction,
       required String sourceLang,
       required String targetLang,
-      required String sector}) async {
+      required String sector,
+      required String apiKey}) async {
     try {
       final List<Map<String, dynamic>> contents = [];
 
@@ -71,7 +70,7 @@ SADECE AŞAĞIDAKİ JSON FORMATINDA YANIT VER. BAŞKA HİÇBİR TEXT YAZMA:
       });
 
       final response = await http.post(
-        Uri.parse('$_baseUrl?key=$_apiKey'),
+        Uri.parse('$_baseUrl?key=$apiKey'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           "contents": contents,
@@ -113,7 +112,7 @@ SADECE AŞAĞIDAKİ JSON FORMATINDA YANIT VER. BAŞKA HİÇBİR TEXT YAZMA:
     }
   }
 
-  Future<Map<String, String>> translateDirect(String currentMessage, {String? direction, required String sourceLang, required String targetLang, required String sector}) async {
-    return translateMessage(currentMessage, [], direction: direction, sourceLang: sourceLang, targetLang: targetLang, sector: sector); // Empty history for direct
+  Future<Map<String, String>> translateDirect(String currentMessage, {String? direction, required String sourceLang, required String targetLang, required String sector, required String apiKey}) async {
+    return translateMessage(currentMessage, [], direction: direction, sourceLang: sourceLang, targetLang: targetLang, sector: sector, apiKey: apiKey); // Empty history for direct
   }
 }

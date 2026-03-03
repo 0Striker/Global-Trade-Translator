@@ -15,6 +15,7 @@ class ChatProvider with ChangeNotifier {
   String? _currentSourceLanguage;
   String? _currentTargetLanguage;
   String? _currentSector;
+  String? _apiKey;
   bool _isLoading = false;
 
   List<Conversation> get conversations => _conversations;
@@ -23,6 +24,7 @@ class ChatProvider with ChangeNotifier {
   String? get currentSourceLanguage => _currentSourceLanguage;
   String? get currentTargetLanguage => _currentTargetLanguage;
   String? get currentSector => _currentSector;
+  String? get apiKey => _apiKey;
   bool get isLoading => _isLoading;
 
   Future<void> loadConversations() async {
@@ -30,7 +32,7 @@ class ChatProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> startNewConversation({String? sourceLang, String? targetLang, String? sector}) async {
+  Future<void> startNewConversation({String? sourceLang, String? targetLang, String? sector, required String apiKey}) async {
     final uuid = const Uuid().v4();
     final newConversation = Conversation(
       id: uuid,
@@ -44,6 +46,7 @@ class ChatProvider with ChangeNotifier {
     _currentSourceLanguage = newConversation.sourceLanguage;
     _currentTargetLanguage = newConversation.targetLanguage;
     _currentSector = newConversation.sector;
+    _apiKey = apiKey;
     _currentMessages = [];
     await loadConversations();
     notifyListeners();
@@ -78,7 +81,7 @@ class ChatProvider with ChangeNotifier {
   }
 
   Future<void> sendMessage(String content, {bool isContextual = true, String direction = 'giden'}) async {
-    if (_currentConversationId == null || content.trim().isEmpty) return;
+    if (_currentConversationId == null || content.trim().isEmpty || _apiKey == null) return;
 
     final userMessage = Message(
       conversationId: _currentConversationId!,
@@ -108,6 +111,7 @@ class ChatProvider with ChangeNotifier {
           sourceLang: _currentSourceLanguage ?? 'Türkçe',
           targetLang: _currentTargetLanguage ?? 'İngilizce',
           sector: _currentSector ?? '',
+          apiKey: _apiKey!,
         );
       } else {
         responseData = await _geminiService.translateDirect(
@@ -116,6 +120,7 @@ class ChatProvider with ChangeNotifier {
           sourceLang: _currentSourceLanguage ?? 'Türkçe',
           targetLang: _currentTargetLanguage ?? 'İngilizce',
           sector: _currentSector ?? '',
+          apiKey: _apiKey!,
         );
       }
 
